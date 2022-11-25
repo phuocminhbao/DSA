@@ -24,7 +24,6 @@ public class Maze {
     int robotRow;
     int robotCol;
     int steps;
-    String previousMove;
 
     ArrayStack<Coordinate> deadZone;
     ArrayStack<Coordinate> visited;
@@ -129,7 +128,7 @@ public class Maze {
                 steps++;
                 robotRow = currentRow;
                 robotCol = currentCol;
-                previousMove = direction;
+                path.push(direction);
                 visited.push(new Coordinate(robotRow, robotCol));
                 return "true";
             }
@@ -150,7 +149,7 @@ class Robot {
     // where the robot just go randomly
     public void navigate() {
         Maze maze = new Maze();
-        String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
+        String[] directions = {"LEFT", "DOWN", "RIGHT", "UP"};
         String result = "";
         while (!result.equals("win")) {
             for (String dir: directions
@@ -159,9 +158,11 @@ class Robot {
                 if (result.equals("true")) break;
             }
             if (result.equals("false")) {
-                maze.deadZone.push(new Coordinate(maze.robotRow, maze.cols));
-                maze.go(maze.backDirection(maze.previousMove));}
-
+                maze.deadZone.push(new Coordinate(maze.robotRow, maze.robotCol));
+                // To fix create a goBack func instead of call the go
+                maze.go(maze.backDirection(maze.path.peek()));
+                maze.path.pop();
+            }
         }
     }
 }
